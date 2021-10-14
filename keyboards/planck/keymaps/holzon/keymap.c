@@ -46,6 +46,21 @@ enum planck_keycodes {
 #define MOVE MO(_MOVE)
 #define NUMPAD MO(_NUMPAD)
 
+// Tap Dance declarations
+enum {
+    TD_ESC_NUMPAD,
+};
+
+// `finished` and `reset` functions for each tapdance keycode
+void esc_numpad_finished(qk_tap_dance_state_t *state, void *user_data);
+void esc_numpad_reset(qk_tap_dance_state_t *state, void *user_data);
+
+// Tap Dance definitions
+qk_tap_dance_action_t tap_dance_actions[] = {
+    // Tap once for Escape, twice for Caps Lock
+    [TD_ESC_NUMPAD] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, esc_numpad_finished, esc_numpad_reset)
+};
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* Qwerty
@@ -61,7 +76,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_QWERTY] = LAYOUT_planck_grid(
     KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
-    LCTL_T(KC_ESC),  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+    TD(TD_ESC_NUMPAD),  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
     KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, RSFT_T(KC_ENT),
     LCTL_T(KC_LBRACKET), KC_LGUI, KC_LALT, MOVE, LOWER,   KC_SPC,  KC_SPC,  RAISE, KC_APPLICATION, KC_RALT, KC_RGUI, RCTL_T(KC_RBRACKET)
 ),
@@ -198,7 +213,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 layer_state_t layer_state_set_user(layer_state_t state) {
   state = update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
-  state = update_tri_layer_state(state, _MOVE, _LOWER, _NUMPAD);
   return state;
 }
 
@@ -378,5 +392,19 @@ void matrix_init_user (void) {
   if (!(host_keyboard_leds() & (1<<USB_LED_NUM_LOCK))) {
       register_code(KC_NUMLOCK);
       unregister_code(KC_NUMLOCK);
+  }
+}
+
+void esc_numpad_finished(qk_tap_dance_state_t *state, void *user_data) {
+  if (!state->pressed) {
+    tap_code(KC_ESC);
+  } else {
+    layer_on(_NUMPAD);
+  }
+}
+
+void esc_numpad_reset(qk_tap_dance_state_t *state, void *user_data) {
+  if (layer_state_is(_NUMPAD)) {
+    layer_off(_NUMPAD);
   }
 }
