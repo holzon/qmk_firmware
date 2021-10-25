@@ -49,6 +49,7 @@ enum planck_keycodes {
 // Tap Dance declarations
 enum {
     TD_ESC_NUMPAD,
+    TD_ARNG_ADIA
 };
 
 // `finished` and `reset` functions for each tapdance keycode
@@ -58,7 +59,8 @@ void esc_numpad_reset(qk_tap_dance_state_t *state, void *user_data);
 // Tap Dance definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
     // Tap once for Escape, twice for Caps Lock
-    [TD_ESC_NUMPAD] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, esc_numpad_finished, esc_numpad_reset)
+    [TD_ESC_NUMPAD] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, esc_numpad_finished, esc_numpad_reset),
+    [TD_ARNG_ADIA] = ACTION_TAP_DANCE_DOUBLE(SE_ADIA, SE_ARNG)
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -185,21 +187,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_ADJUST] = LAYOUT_planck_grid(
     _______, RESET,   DEBUG,   RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD,  RGB_VAI, RGB_VAD, KC_DEL ,
-    _______, _______, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  COLEMAK,  DVORAK,  PLOVER,  _______,
+    KC_SYSTEM_SLEEP, _______, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  COLEMAK,  DVORAK,  PLOVER,  _______,
     _______, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  TERM_ON, TERM_OFF, _______, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, _______
 ),
 
 [_MOVE] = LAYOUT_planck_grid(
-    _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, SE_ARNG,
-    _______, _______, _______, _______, _______, _______, KC_LEFT, KC_DOWN, KC_UP,  KC_RGHT, SE_ODIA, SE_ADIA,
+    KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9,  KC_F10, KC_F11, KC_F12,
+    _______, _______, _______, _______, _______, _______, KC_LEFT, KC_DOWN, KC_UP,  KC_RGHT, SE_ODIA, TD(TD_ARNG_ADIA),
     _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, _______
 ),
 
 [_NUMPAD] = LAYOUT_planck_grid(
     _______, _______, _______, _______, _______, _______, _______, KC_NUMLOCK, KC_KP_7,  KC_KP_8, KC_KP_9, KC_KP_MINUS,
-    _______, _______, _______, _______, _______, _______, _______, _______, KC_KP_4,  KC_KP_5, KC_KP_6, KC_KP_PLUS,
+    _______, _______, _______, _______, _______, _______, _______, KC_INSERT, KC_KP_4,  KC_KP_5, KC_KP_6, KC_KP_PLUS,
     _______, _______, _______, _______, _______, _______, _______, _______, KC_KP_1,  KC_KP_2, KC_KP_3, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, KC_KP_0,  _______, KC_KP_DOT, _______
 )
