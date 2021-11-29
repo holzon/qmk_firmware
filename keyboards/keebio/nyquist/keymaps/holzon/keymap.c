@@ -28,19 +28,19 @@ enum layer_names {
 
 // Tap Dance declarations
 enum {
-    TD_ESC_NUMPAD,
+    TD_ESC_MOVE,
     TD_ARNG_ADIA,
     TD_QUOT_ARNG
 };
 
 // `finished` and `reset` functions for each tapdance keycode
-void esc_numpad_finished(qk_tap_dance_state_t *state, void *user_data);
-void esc_numpad_reset(qk_tap_dance_state_t *state, void *user_data);
+void esc_move_finished(qk_tap_dance_state_t *state, void *user_data);
+void esc_move_reset(qk_tap_dance_state_t *state, void *user_data);
 
 // Tap Dance definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
     // Tap once for Escape, twice for Caps Lock
-    [TD_ESC_NUMPAD] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, esc_numpad_finished, esc_numpad_reset),
+    [TD_ESC_MOVE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, esc_move_finished, esc_move_reset),
     [TD_ARNG_ADIA] = ACTION_TAP_DANCE_DOUBLE(SE_ADIA, SE_ARNG),
     [TD_QUOT_ARNG] = ACTION_TAP_DANCE_DOUBLE(KC_QUOT, KC_LBRC)
 };
@@ -60,9 +60,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_QWERTY] = LAYOUT_ortho_4x12(
   KC_TAB,        KC_Q,   KC_W,    KC_E,    KC_R,  KC_T,   KC_Y,   KC_U,  KC_I,    KC_O,    KC_P,    KC_BSPC,
-  TD(TD_ESC_NUMPAD),  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, TD(TD_QUOT_ARNG),
+  TD(TD_ESC_MOVE),  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, TD(TD_QUOT_ARNG),
   KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, RSFT_T(KC_ENT),
-  LCTL_T(KC_LBRACKET), KC_LGUI, KC_LALT, MOVE, LOWER,   KC_SPC,  KC_SPC,  RAISE, KC_APPLICATION, KC_RALT, KC_RGUI, RCTL_T(KC_RBRACKET)
+  LCTL_T(KC_LBRACKET), KC_LGUI, KC_LALT, NUMPAD, LOWER,   KC_SPC,  KC_SPC,  RAISE, KC_APPLICATION, KC_RALT, KC_RGUI, RCTL_T(KC_RBRACKET)
 ),
 
 /* Lower
@@ -192,16 +192,16 @@ void matrix_init_user (void) {
   }
 }
 
-void esc_numpad_finished(qk_tap_dance_state_t *state, void *user_data) {
+void esc_move_finished(qk_tap_dance_state_t *state, void *user_data) {
   if (!state->pressed) {
     tap_code(KC_ESC);
   } else {
-    layer_on(_NUMPAD);
+    layer_on(_MOVE);
   }
 }
 
-void esc_numpad_reset(qk_tap_dance_state_t *state, void *user_data) {
+void esc_move_reset(qk_tap_dance_state_t *state, void *user_data) {
   if (layer_state_is(_NUMPAD)) {
-    layer_off(_NUMPAD);
+    layer_off(_MOVE);
   }
 }
