@@ -201,7 +201,7 @@ void esc_move_finished(qk_tap_dance_state_t *state, void *user_data) {
 }
 
 void esc_move_reset(qk_tap_dance_state_t *state, void *user_data) {
-  if (layer_state_is(_NUMPAD)) {
+  if (layer_state_is(_MOVE)) {
     layer_off(_MOVE);
   }
 }
