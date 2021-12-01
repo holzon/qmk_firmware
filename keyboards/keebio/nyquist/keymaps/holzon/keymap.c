@@ -28,29 +28,17 @@ enum layer_names {
 
 // Tap Dance declarations
 enum {
-    TD_TAB_MOVE,
-    TD_ARNG_ADIA,
-    TD_QUOT_ARNG,
-    TD_SPC_LOWER,
-    TD_SPC_RAISE
+    TD_TAB_MOVE
 };
 
 // `finished` and `reset` functions for each tapdance keycode
 void tab_move_finished(qk_tap_dance_state_t *state, void *user_data);
 void tab_move_reset(qk_tap_dance_state_t *state, void *user_data);
-void spc_lower_finished(qk_tap_dance_state_t *state, void *user_data);
-void spc_lower_reset(qk_tap_dance_state_t *state, void *user_data);
-void spc_raise_finished(qk_tap_dance_state_t *state, void *user_data);
-void spc_raise_reset(qk_tap_dance_state_t *state, void *user_data);
 
 // Tap Dance definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
     // Tap once for Escape, twice for Caps Lock
-    [TD_TAB_MOVE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, tab_move_finished, tab_move_reset),
-    [TD_ARNG_ADIA] = ACTION_TAP_DANCE_DOUBLE(SE_ADIA, SE_ARNG),
-    [TD_QUOT_ARNG] = ACTION_TAP_DANCE_DOUBLE(KC_QUOT, KC_LBRC),
-    [TD_SPC_LOWER] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, spc_lower_finished, spc_lower_reset),
-    [TD_SPC_RAISE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, spc_raise_finished, spc_raise_reset)
+    [TD_TAB_MOVE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, tab_move_finished, tab_move_reset)
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -108,7 +96,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_RAISE] = LAYOUT_ortho_4x12(
     KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_DEL,
     KC_DEL,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_BSLS,
-    _______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_NUHS, KC_NUBS, KC_PGUP, KC_PGDN, _______,
+    _______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_HOME, KC_END, KC_PGUP, KC_PGDN, _______,
     KC_LEFT_PAREN, KC_LBRACKET, KC_LEFT_CURLY_BRACE, KC_LEFT_ANGLE_BRACKET, _______, _______, _______, _______, KC_RIGHT_ANGLE_BRACKET, KC_RIGHT_CURLY_BRACE, KC_RBRACKET, KC_RIGHT_PAREN
 ),
 
@@ -127,7 +115,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   TSKMGR,  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, CALTDEL,
   KC_SYSTEM_SLEEP, _______, _______, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, _______, _______, _______, _______, _______,
   _______,  MUV_DE, MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  _______, _______, _______, _______, _______,
-  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, RESET
+  LGUI_T(KC_PAUS), _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, RESET
 ),
 
 /* Function
@@ -149,8 +137,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [_MOVE] = LAYOUT_ortho_4x12(
-    KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9,  KC_F10, KC_F11, KC_F12,
-    _______, _______, _______, _______, _______, _______, KC_LEFT, KC_DOWN, KC_UP,  KC_RGHT, SE_ODIA, TD(TD_ARNG_ADIA),
+    _______, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9,  KC_F10, KC_F11,
+    _______, _______, _______, _______, _______, _______, KC_LEFT, KC_DOWN, KC_UP,  KC_RGHT, _______, KC_F12,
     _______, _______, _______, _______, _______, _______, LCTL(LGUI(KC_LEFT)), _______, _______,  LCTL(LGUI(KC_RIGHT)), _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, SE_ARNG,  SE_ADIA, SE_ODIA, _______
 ),
@@ -213,33 +201,5 @@ void tab_move_finished(qk_tap_dance_state_t *state, void *user_data) {
 void tab_move_reset(qk_tap_dance_state_t *state, void *user_data) {
   if (layer_state_is(_MOVE)) {
     layer_off(_MOVE);
-  }
-}
-
-void spc_lower_finished(qk_tap_dance_state_t *state, void *user_data) {
-  if (!state->pressed) {
-    tap_code(KC_SPC);
-  } else {
-    layer_on(_LOWER);
-  }
-}
-
-void spc_lower_reset(qk_tap_dance_state_t *state, void *user_data) {
-  if (layer_state_is(_LOWER)) {
-    layer_off(_LOWER);
-  }
-}
-
-void spc_raise_finished(qk_tap_dance_state_t *state, void *user_data) {
-  if (!state->pressed) {
-    tap_code(KC_SPC);
-  } else {
-    layer_on(_RAISE);
-  }
-}
-
-void spc_raise_reset(qk_tap_dance_state_t *state, void *user_data) {
-  if (layer_state_is(_RAISE)) {
-    layer_off(_RAISE);
   }
 }
