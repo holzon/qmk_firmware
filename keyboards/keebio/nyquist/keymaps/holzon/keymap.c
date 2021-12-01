@@ -28,21 +28,29 @@ enum layer_names {
 
 // Tap Dance declarations
 enum {
-    TD_ESC_MOVE,
+    TD_TAB_MOVE,
     TD_ARNG_ADIA,
-    TD_QUOT_ARNG
+    TD_QUOT_ARNG,
+    TD_SPC_LOWER,
+    TD_SPC_RAISE
 };
 
 // `finished` and `reset` functions for each tapdance keycode
-void esc_move_finished(qk_tap_dance_state_t *state, void *user_data);
-void esc_move_reset(qk_tap_dance_state_t *state, void *user_data);
+void tab_move_finished(qk_tap_dance_state_t *state, void *user_data);
+void tab_move_reset(qk_tap_dance_state_t *state, void *user_data);
+void spc_lower_finished(qk_tap_dance_state_t *state, void *user_data);
+void spc_lower_reset(qk_tap_dance_state_t *state, void *user_data);
+void spc_raise_finished(qk_tap_dance_state_t *state, void *user_data);
+void spc_raise_reset(qk_tap_dance_state_t *state, void *user_data);
 
 // Tap Dance definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
     // Tap once for Escape, twice for Caps Lock
-    [TD_ESC_MOVE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, esc_move_finished, esc_move_reset),
+    [TD_TAB_MOVE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, tab_move_finished, tab_move_reset),
     [TD_ARNG_ADIA] = ACTION_TAP_DANCE_DOUBLE(SE_ADIA, SE_ARNG),
-    [TD_QUOT_ARNG] = ACTION_TAP_DANCE_DOUBLE(KC_QUOT, KC_LBRC)
+    [TD_QUOT_ARNG] = ACTION_TAP_DANCE_DOUBLE(KC_QUOT, KC_LBRC),
+    [TD_SPC_LOWER] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, spc_lower_finished, spc_lower_reset),
+    [TD_SPC_RAISE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, spc_raise_finished, spc_raise_reset)
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -59,11 +67,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_QWERTY] = LAYOUT_ortho_4x12(
-  KC_TAB,        KC_Q,   KC_W,    KC_E,    KC_R,  KC_T,   KC_Y,   KC_U,  KC_I,    KC_O,    KC_P,    KC_BSPC,
-  TD(TD_ESC_MOVE),  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, TD(TD_QUOT_ARNG),
+  TD(TD_TAB_MOVE),        KC_Q,   KC_W,    KC_E,    KC_R,  KC_T,   KC_Y,   KC_U,  KC_I,    KC_O,    KC_P,    KC_BSPC,
+  LCTL_T(KC_ESC),  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, RCTL_T(KC_QUOT),
   KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, RSFT_T(KC_ENT),
-  LCTL_T(KC_LBRACKET), KC_LGUI, KC_LALT, NUMPAD, LOWER,   KC_SPC,  KC_SPC,  RAISE, KC_APPLICATION, KC_RALT, KC_RGUI, RCTL_T(KC_RBRACKET)
+  LCTL_T(KC_LBRACKET), KC_LGUI, KC_LALT, KC_APPLICATION, NUMPAD,   TD(TD_SPC_LOWER),  TD(TD_SPC_RAISE), NUMPAD, KC_APPLICATION, KC_RALT, KC_RGUI, RCTL_T(KC_RBRACKET)
 ),
+
+/* TD(TD_ESC_MOVE) */
 
 /* Lower
  * ,-----------------------------------------------------------------------------------.
@@ -142,7 +152,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9,  KC_F10, KC_F11, KC_F12,
     _______, _______, _______, _______, _______, _______, KC_LEFT, KC_DOWN, KC_UP,  KC_RGHT, SE_ODIA, TD(TD_ARNG_ADIA),
     _______, _______, _______, _______, _______, _______, LCTL(LGUI(KC_LEFT)), _______, _______,  LCTL(LGUI(KC_RIGHT)), _______, _______,
-    _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, _______
+    _______, _______, _______, _______, _______, _______, _______, _______, SE_ARNG,  SE_ADIA, SE_ODIA, _______
 ),
 
 [_NUMPAD] = LAYOUT_ortho_4x12(
@@ -192,16 +202,44 @@ void matrix_init_user (void) {
   }
 }
 
-void esc_move_finished(qk_tap_dance_state_t *state, void *user_data) {
+void tab_move_finished(qk_tap_dance_state_t *state, void *user_data) {
   if (!state->pressed) {
-    tap_code(KC_ESC);
+    tap_code(KC_TAB);
   } else {
     layer_on(_MOVE);
   }
 }
 
-void esc_move_reset(qk_tap_dance_state_t *state, void *user_data) {
+void tab_move_reset(qk_tap_dance_state_t *state, void *user_data) {
   if (layer_state_is(_MOVE)) {
     layer_off(_MOVE);
+  }
+}
+
+void spc_lower_finished(qk_tap_dance_state_t *state, void *user_data) {
+  if (!state->pressed) {
+    tap_code(KC_SPC);
+  } else {
+    layer_on(_LOWER);
+  }
+}
+
+void spc_lower_reset(qk_tap_dance_state_t *state, void *user_data) {
+  if (layer_state_is(_LOWER)) {
+    layer_off(_LOWER);
+  }
+}
+
+void spc_raise_finished(qk_tap_dance_state_t *state, void *user_data) {
+  if (!state->pressed) {
+    tap_code(KC_SPC);
+  } else {
+    layer_on(_RAISE);
+  }
+}
+
+void spc_raise_reset(qk_tap_dance_state_t *state, void *user_data) {
+  if (layer_state_is(_RAISE)) {
+    layer_off(_RAISE);
   }
 }
